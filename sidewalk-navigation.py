@@ -59,6 +59,8 @@ style = {'fillColor': '#0064A7', 'color': '#0064A7', 'weight' : 2}
 sidewalk_json = edges_gdf.to_json()
 folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
 
+user_input = st.text_area("Enter adress", "")
+
 folium_static(mapCville)
 
 
