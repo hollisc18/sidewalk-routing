@@ -53,7 +53,7 @@ nodes_gdf, edges_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry
 style = {'fillColor': '#0064A7', 'color': '#0064A7', 'weight' : 2}
 sidewalk_json = edges_gdf.to_json()
 folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
-mLoc = folium_static(mapCville)
+folium_static(mapCville)
 
 user_input = st.text_input("Enter adress", "")
 
