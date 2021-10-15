@@ -17,6 +17,8 @@ import folium
 import sys
 import overpy
 import shapely
+from streamlit_folium import folium_static
+#https://discuss.streamlit.io/t/ann-streamlit-folium-a-component-for-rendering-folium-maps/4367
 from shapely.geometry import LineString
 from shapely.geometry import MultiPoint
 from shapely.geometry import Point
@@ -57,6 +59,6 @@ style = {'fillColor': '#0064A7', 'color': '#0064A7', 'weight' : 2}
 sidewalk_json = edges_gdf.to_json()
 folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
 
-st.write(type(mapCville))
+folium_static(mapCville)
 
 
