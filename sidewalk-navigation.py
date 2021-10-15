@@ -19,12 +19,7 @@ import overpy
 import shapely
 from streamlit_folium import folium_static
 #https://discuss.streamlit.io/t/ann-streamlit-folium-a-component-for-rendering-folium-maps/4367
-from shapely.geometry import LineString
-from shapely.geometry import MultiPoint
-from shapely.geometry import Point
-from shapely.geometry import MultiLineString
 from shapely.ops import nearest_points
-from IPython.display import IFrame
 from geopandas.tools import geocode
 import geopy
 from geopy.geocoders import Nominatim
@@ -60,7 +55,7 @@ sidewalk_json = edges_gdf.to_json()
 folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
 
 user_input = st.text_input("Enter adress", "")
-folium_static(mapCville)
+st.pydeck_chart(r)
 
 address = user_input
 locator = Nominatim(user_agent="geoCoder")
