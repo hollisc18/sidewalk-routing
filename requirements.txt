@@ -12,3 +12,4 @@ networkx
 osmnx
 overpy
 geopy
+streamlit_folium
