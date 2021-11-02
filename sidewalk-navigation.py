@@ -110,15 +110,20 @@ try:
         folium.Marker((t.y, t.x), popup=name, icon=folium.Icon(color='red', icon_color='white', 
                     icon='bus', angle=0, prefix='fa')).add_to(mapCville)
         mapCville.fit_bounds([[addr_lat,addr_long], [t.y, t.x]])
+        """
+        Closest stop route 
+        """
+        folium_static(mapRoute)
 except:
     name = bus_gdf[bus_gdf['geometry'] == target_union]['StopName'].to_numpy()[0]
     folium.Marker((target_union.y, target_union.x), popup=name, icon=folium.Icon(color='red', icon_color='white', 
                     icon='bus', angle=0, prefix='fa')).add_to(mapCville)
     mapCville.fit_bounds([[addr_lat,addr_long], [target_union.y, target_union.x]])
+    """
+    Closest stop route 
+    """
+    folium_static(mapRoute)
 
-"""
-Closest stop route 
-"""
-folium_static(mapRoute)
+
 
 
