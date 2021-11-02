@@ -31,7 +31,15 @@ from geopy.geocoders import Nominatim
 testing testing 
 
 """
-user_input = st.text_input("Enter a Charlottesville address: ", "Street, City, State")
+mapCAT = folium.Map(location = [38.0336,-78.5080], tiles = 'OpenStreetMap', zoom_start = 14)
+CAT_gdf = gpd.read_file('https://opendata.arcgis.com/datasets/6465cd54bcf4498495be8c86a9d7c3f2_4.geojson')
+CAT_union = CAT_gdf.unary_union
+for i in CAT_union:
+    name = CAT_gdf[CAT_gdf['geometry'] == i]['StopName'].to_numpy()[0]
+    folium.Marker((i.y, i.x), popup=name, icon=folium.Icon(color='red', icon_color='white', icon='bus', angle=0, prefix='fa')).add_to(mapCAT)
+folium_static(mapCAT)
+
+user_input = st.text_input("Enter a Charlottesville address: ", "1826 University Ave, Charlottesville, VA")
 
 address = user_input
 locator = Nominatim(user_agent="geoCoder")
@@ -55,7 +63,6 @@ style = {'fillColor': '#B44700', 'color': '#B44700', 'weight' : 1.5, 'opacity': 
 sidewalk_json = edges2_gdf.to_json()
 folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
 
-CAT_gdf = gpd.read_file('https://opendata.arcgis.com/datasets/6465cd54bcf4498495be8c86a9d7c3f2_4.geojson')
 busLat = CAT_gdf[ abs(CAT_gdf['Latitude']-addr_lat) <  0.01 ] 
 bus_gdf = busLat[ abs(busLat['Longitude']-addr_long) <  0.01]
 
