@@ -36,5 +36,16 @@ hello
 CAT_gdf = gpd.read_file('https://opendata.arcgis.com/datasets/6465cd54bcf4498495be8c86a9d7c3f2_4.geojson')
 in_geo = 'https://opendata.arcgis.com/datasets/6465cd54bcf4498495be8c86a9d7c3f2_4.geojson'
 m = leafmap.Map(center=(38.0336,-78.5080), zoom=14, width=450, height=500)
-m.add_geojson(in_geo, layer_name="CAT", info_mode="on_hover")
+
+style = {
+    "stroke": True,
+    "color": "#0000ff",
+    "weight": 2,
+    "opacity": 1,
+    "fill": True,
+    "fillColor": "#0000ff",
+    "fillOpacity": 0.5,
+}
+
+m.add_geojson(in_geo, layer_name="CAT", style=style)
 m.to_streamlit()
