@@ -13,4 +13,8 @@ osmnx
 overpy
 geopy
 streamlit_folium
-leafmap.foliumap
+keplergl
+streamlit
+streamlit-keplergl
+xarray_leaflet
+git+git://github.com/giswqs/leafmap
