@@ -75,9 +75,8 @@ def map2():
     sidewalk_json = edges2_gdf.to_json()
     folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
     mapCville = add_bus(mapCville)
-    return mapCville
+    return mapCville.get_root().render()
 
 with col2:
-    html_cville = map2().get_root().render()
-    components.html(html_cville)
+    components.html(map2())
 
