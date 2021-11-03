@@ -50,7 +50,9 @@ col1.header("CAT Stops")
 with col1:
     folium_static(mapCAT)
 
-user_input = st.text_input("Enter a Charlottesville address: ", "155 Rugby Rd, Charlottesville, VA 22904")
+col2.header("Route to Stop:")
+with col2:
+    user_input = st.text_input("Enter a Charlottesville address: ", "155 Rugby Rd, Charlottesville, VA 22904")
 
 address = user_input
 locator = Nominatim(user_agent="geoCoder")
@@ -137,10 +139,8 @@ except:
     mapCville.fit_bounds([[addr_lat,addr_long], [target_union.y, target_union.x]])
 
     
-"""
-Route to the closest CAT stop:
-"""
-folium_static(mapCville)
+with col2:
+    folium_static(mapCville)
 
 
 """
