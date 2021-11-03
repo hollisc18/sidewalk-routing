@@ -38,6 +38,6 @@ Read more about this project at https://www.codeforcville.org/sidewalk-mapping
 """
 
 url = 'https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/mapCAT.html'
-f = urllib.requests.urlopen(url)
+f = urllib.request.urlopen(url)
 html_map = f.read()
 components.html(html_map)
