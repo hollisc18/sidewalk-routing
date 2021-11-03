@@ -46,13 +46,7 @@ for i in CAT_union:
     name = CAT_gdf[CAT_gdf['geometry'] == i]['StopName'].to_numpy()[0]
     folium.Marker((i.y, i.x), popup=name, icon=folium.Icon(color='red', icon_color='white', icon='bus', angle=0, prefix='fa')).add_to(mapCAT)
 
-col1, col2 = st.columns(2)
-col1.header("CAT Stops")
-with col1:
-    html_string = mapCAT._repr_html_()
-    components.html(html_string, height=800)
 
-col2.header("Route to Stop:")
 user_input = st.text_input("Enter a Charlottesville address: ", "155 Rugby Rd, Charlottesville, VA 22904")
 
 address = user_input
@@ -63,6 +57,18 @@ addr_lat = location.latitude
 addr_long = location.longitude
 address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
 address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
+
+col1, col2 = st.columns(2)
+col1.subheader("CAT Stops")
+with col1:
+    html_string = mapCAT._repr_html_()
+    components.html(html_string, height=800)
+    """
+    done
+    """
+
+col2.subheader("Route to Stop:")
+
 
 #create graph of cville sidewalks
 G = ox.graph_from_address(address, 800, network_type='walk')
