@@ -75,26 +75,10 @@ def create_graph():
     edges2_gdf = edges_gdf[edges_gdf['highway'] == 'footway']
     return edges2_gdf.to_json()
 
-def make_g():
-    G = ox.graph_from_place("Charlottesville, Virginia, USA", network_type='walk')
-    return G
-def make_sw():
-    sidewalk_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
-    return sidewalk_gdf
-def nodes_edges():
-    nodes_gdf, edges_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
-    return nodes_gdf, edges_gdf
-
-def edges2():
-    edges2_gdf = edges_gdf[edges_gdf['highway'] == 'footway']
-    return edges2_gdf
 
 @st.cache
 def map2():
-    G = make_G()
-    sidewalk_gdf = make_sw()
-    nodes_gdf, edges_gdf = nodes_edges()
-    sidewalk_json = edges2().to_json()
+    sidewalk_json = create_graph()
     mapCville = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap', zoom_start = 15)
     style = {'fillColor': '#B44700', 'color': '#B44700', 'weight' : 1.5, 'opacity': 0.7}
     folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
