@@ -26,10 +26,14 @@ import geopy
 from geopy.geocoders import Nominatim
 
 """
-# Sidewalk navigation to the closest CAT bus stop in Charlottesville
+# Sidewalk Navigation to CAT Bus Stops in Charlottesville
 
-testing testing 
+This application was developed for pedestrians in Charlottesville to better navigate a wheelchair accessible route to their destination.
+All data is pulled from OpenStreetMap, a collaborative project to create a free and accurate geographic database of the world. 
+Code for Charlottesville has been working with OpenStreetMap to map sidewalks, curbs, and crosswalks around Cville.
+Read more about this project at https://www.codeforcville.org/sidewalk-mapping
 
+Enter an address below to calculate the sidewalk nativation to the closest CAT bus stop within half a mile.
 """
 mapCAT = folium.Map(location = [38.0336,-78.5080], tiles = 'OpenStreetMap', zoom_start = 14)
 CAT_gdf = gpd.read_file('https://opendata.arcgis.com/datasets/6465cd54bcf4498495be8c86a9d7c3f2_4.geojson')
@@ -39,7 +43,7 @@ for i in CAT_union:
     folium.Marker((i.y, i.x), popup=name, icon=folium.Icon(color='red', icon_color='white', icon='bus', angle=0, prefix='fa')).add_to(mapCAT)
 folium_static(mapCAT)
 
-user_input = st.text_input("Enter a Charlottesville address: ", "1826 University Ave, Charlottesville, VA")
+user_input = st.text_input("Enter a Charlottesville address: ", "155 Rugby Rd, Charlottesville, VA 22904")
 
 address = user_input
 locator = Nominatim(user_agent="geoCoder")
@@ -127,10 +131,11 @@ except:
 
     
 """
-Closest stop route 
+Route to the closest CAT stop:
 """
 folium_static(mapCville)
 
 
-
-
+"""
+Link to GitHub code: https://github.com/hollisc18/sidewalk-routing/edit/main/sidewalk-navigation.py
+"""
