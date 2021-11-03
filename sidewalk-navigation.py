@@ -52,7 +52,7 @@ with col1:
     html_string = mapCAT._repr_html_()
     #folium_static(mapCAT, 400, 250)
     #st.markdown(html_string, unsafe_allow_html=True)
-    components.html(html_string)
+    components.html(html_string, height=500)
 
 col2.header("Route to Stop:")
 with col2:
