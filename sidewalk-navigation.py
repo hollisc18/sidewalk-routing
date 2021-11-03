@@ -146,8 +146,7 @@ except:
 with col2:
     html_string2 = mapCville._repr_html_()
     components.html(html_string2)
-
-
-"""
-Link to GitHub code: https://github.com/hollisc18/sidewalk-routing/edit/main/sidewalk-navigation.py
-"""
+    
+st.sidebar.write("")
+st.sidebar.write("")
+st.sidebar.write("Source code: https://github.com/hollisc18/sidewalk-routing/edit/main/sidewalk-navigation.py")
