@@ -50,7 +50,7 @@ col1, col2 = st.columns(2)
 col1.header("CAT Stops")
 with col1:
     html_string = mapCAT._repr_html_()
-    components.html(html_string, height=800, height=800)
+    components.html(html_string, height=800)
 
 col2.header("Route to Stop:")
 user_input = st.text_input("Enter a Charlottesville address: ", "155 Rugby Rd, Charlottesville, VA 22904")
