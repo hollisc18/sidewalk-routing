@@ -45,7 +45,6 @@ def map1():
     for i in bus_union:
         name = bus_gdf[bus_gdf['geometry'] == i]['StopName'].to_numpy()[0]
         folium.Marker((i.y, i.x), popup=name, icon=folium.Icon(color='red', icon_color='white', icon='bus', angle=0, prefix='fa')).add_to(mapCAT)    
-    html_string = mapCAT.get_root().render()
-    components.html(html_string)   
-
-map1()
+    return mapCAT.get_root().render()
+   
+components.html(map1())   
