@@ -41,7 +41,6 @@ Enter a Charlottesville address in the sidebar to calculate the route to the clo
 """
 global bus_gdf
 
-@st.cache
 def add_bus(m):
     bus_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
     bus_union = bus_gdf.unary_union
@@ -62,17 +61,5 @@ col2.subheader("Route to Stop:")
 with col1:
     components.html(map1())
 
-@st.cache
-def map2():
-    G = ox.graph_from_place("Charlottesville, Virginia, USA", network_type='walk')
-    #convert to geodataframe
-    sidewalk_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
-    #extract nodes and edges
-    nodes_gdf, edges_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
-    edges2_gdf = edges_gdf[edges_gdf['highway'] == 'footway']
 
-    mapCville = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap', zoom_start = 15)
-    style = {'fillColor': '#B44700', 'color': '#B44700', 'weight' : 1.5, 'opacity': 0.7}
-    sidewalk_json = edges2_gdf.to_json()
-    folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
 
