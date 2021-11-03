@@ -18,7 +18,7 @@ import folium
 import sys
 import overpy
 import shapely
-from gtk
+import Tkinter
 from streamlit_folium import folium_static
 #https://discuss.streamlit.io/t/ann-streamlit-folium-a-component-for-rendering-folium-maps/4367
 from shapely.ops import nearest_points
