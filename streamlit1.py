@@ -43,7 +43,7 @@ style = {
     "weight": 2,
     "opacity": 1,
     "fill": True,
-    "fillColor": "#0000ff",
+    "fillColor": "#DE1600",
     "fillOpacity": 0.5,
 }
 
