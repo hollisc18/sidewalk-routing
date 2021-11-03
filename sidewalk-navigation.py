@@ -18,6 +18,7 @@ import folium
 import sys
 import overpy
 import shapely
+import webbrowser
 from streamlit_folium import folium_static
 import streamlit.components.v1 as components
 #https://discuss.streamlit.io/t/ann-streamlit-folium-a-component-for-rendering-folium-maps/4367
@@ -147,9 +148,11 @@ with col2:
     html_string2 = mapCville._repr_html_()
     components.html(html_string2)
     
-schedule_url = 'https://www.charlottesville.gov/481/CAT-Schedules-Maps'
+sched_url = 'https://www.charlottesville.gov/481/CAT-Schedules-Maps'
 
 button_cat = st.sidebar.button("CAT Schedule")
+if button_cat:
+    webbrowser.open_new_tab(sched_url)
 st.sidebar.write("")
 st.sidebar.write("")
 st.sidebar.write("Source code: https://github.com/hollisc18/sidewalk-routing/edit/main/sidewalk-navigation.py")
