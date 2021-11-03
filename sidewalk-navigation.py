@@ -48,7 +48,7 @@ for i in CAT_union:
 col1, col2 = st.columns(2)
 col1.header("CAT Stops")
 with col1:
-    html_string = mapCAT.get_root().render()
+    html_string = mapCAT._repr_html_()
     #folium_static(mapCAT, 400, 250)
     st.markdown(html_string, unsafe_allow_html=True)
 
