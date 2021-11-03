@@ -61,8 +61,8 @@ address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_d
 col1, col2 = st.columns(2)
 col1.subheader("CAT Stops")
 with col1:
-    html_string = mapCAT._repr_html_()
-    components.html(html_string, use_column_width=True)
+    html_string = mapCAT.get_root().render()
+    components.html(html_string)
 
     """
     done
@@ -149,7 +149,7 @@ except:
     
 with col2:
     html_string2 = mapCville._repr_html_()
-    components.html(html_string2, height=800)
+    components.html(html_string2)
 
 
 """
