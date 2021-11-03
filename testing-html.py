@@ -40,6 +40,11 @@ Interact with the map to view all of the Charlottesville bus stops in the area.
 Enter a Charlottesville address in the sidebar to calculate the route to the closest stop and see the sidewalk maps within half a mile of the address.
 """
 global bus_gdf
+global G
+global sidewalk_gdf
+global edges_gdf
+global edges2_gdf
+global nodes_gdf
 
 def add_bus(m):
     bus_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
@@ -61,8 +66,7 @@ col2.subheader("Route to Stop:")
 with col1:
     components.html(map1())
 
-@st.cache
-def map2():
+def create_graph():
     G = ox.graph_from_place("Charlottesville, Virginia, USA", network_type='walk')
     #convert to geodataframe
     sidewalk_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
@@ -70,6 +74,9 @@ def map2():
     nodes_gdf, edges_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
     edges2_gdf = edges_gdf[edges_gdf['highway'] == 'footway']
 
+@st.cache
+def map2():
+    create_graph()
     mapCville = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap', zoom_start = 15)
     style = {'fillColor': '#B44700', 'color': '#B44700', 'weight' : 1.5, 'opacity': 0.7}
     sidewalk_json = edges2_gdf.to_json()
