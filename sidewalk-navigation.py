@@ -50,11 +50,10 @@ col1, col2 = st.columns(2)
 col1.header("CAT Stops")
 with col1:
     html_string = mapCAT._repr_html_()
-    components.html(html_string)
+    components.html(html_string, height=800, height=800)
 
 col2.header("Route to Stop:")
-with col2:
-    user_input = st.text_input("Enter a Charlottesville address: ", "155 Rugby Rd, Charlottesville, VA 22904")
+user_input = st.text_input("Enter a Charlottesville address: ", "155 Rugby Rd, Charlottesville, VA 22904")
 
 address = user_input
 locator = Nominatim(user_agent="geoCoder")
@@ -143,7 +142,7 @@ except:
     
 with col2:
     html_string2 = mapCville._repr_html_()
-    components.html(html_string2)
+    components.html(html_string2, height=800)
 
 
 """
