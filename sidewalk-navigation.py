@@ -147,6 +147,9 @@ with col2:
     html_string2 = mapCville._repr_html_()
     components.html(html_string2)
     
+schedule_url = 'https://www.charlottesville.gov/481/CAT-Schedules-Maps'
+
+button_cat = st.sidebar.button("CAT Schedule")
 st.sidebar.write("")
 st.sidebar.write("")
 st.sidebar.write("Source code: https://github.com/hollisc18/sidewalk-routing/edit/main/sidewalk-navigation.py")
