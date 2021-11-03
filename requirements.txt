@@ -15,7 +15,4 @@ geopy
 streamlit_folium
 keplergl
 streamlit
-streamlit-keplergl
-xarray_leaflet
-git+git://github.com/giswqs/leafmap
-tkinter
+gtk
