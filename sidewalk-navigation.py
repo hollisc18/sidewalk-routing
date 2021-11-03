@@ -39,7 +39,7 @@ Read more about this project at https://www.codeforcville.org/sidewalk-mapping
 
 """
 
-mapCAT = folium.Map(location = [38.0336,-78.5080], tiles = 'OpenStreetMap', zoom_start = 14)
+mapCAT = folium.Map(location = [38.031704,-78.490532], tiles = 'OpenStreetMap', zoom_start = 14)
 CAT_gdf = gpd.read_file('https://opendata.arcgis.com/datasets/6465cd54bcf4498495be8c86a9d7c3f2_4.geojson')
 CAT_union = CAT_gdf.unary_union
 for i in CAT_union:
