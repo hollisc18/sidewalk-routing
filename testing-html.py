@@ -86,4 +86,41 @@ def map2():
 
 with col2:
     components.html(map2())
+    
+st.sidebar.subheader("Enter an address below:")
+user_input = st.sidebar.text_input("(Street, City, State Zip)", "155 Rugby Rd, Charlottesville, VA")
+
+address = user_input
+locator = Nominatim(user_agent="geoCoder")
+location = locator.geocode(address)
+
+addr_lat = location.latitude
+addr_long = location.longitude
+address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
+address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
+
+#https://towardsdatascience.com/nearest-neighbour-analysis-with-geospatial-data-7bcd95f34c0e
+def closest_id(r, val, c="geometry"):
+    target_geom = nearest_points(r[c], nodes_gdf.unary_union)
+    target = nodes_gdf[nodes_gdf.geometry == target_geom[1]]
+    return target.index[0]
+
+address_gdf["closest_id"] = address_gdf.apply(closest_id, val="geometry", axis=1)
+addr_ID = address_gdf['closest_id'].to_numpy()[0]
+
+G2 = G
+stop_ids = bus_gdf["closest_id"]
+short_len = sys.maxsize
+short_path = []
+for i in stop_ids.index:
+    try:
+        r = nx.shortest_path(G2, addr_ID, stop_ids[i], weight='length')
+        len = nx.shortest_path_length(G2, addr_ID, stop_ids[i], weight='length')
+        if (len < short_len):
+            short_len = len
+            short_path = r
+    except:
+        pass
+
+
 
