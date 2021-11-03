@@ -62,7 +62,7 @@ col1, col2 = st.columns(2)
 col1.subheader("CAT Stops")
 with col1:
     html_string = mapCAT.get_root().render()
-    st.image(components.html(html_string), use_column_width=True)
+    st.markdown(components.html(html_string), unsafe_allow_html=True, use_column_width=True)
 
 
 col2.subheader("Route to Stop:")
