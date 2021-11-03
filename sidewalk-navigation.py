@@ -62,7 +62,7 @@ col1, col2 = st.columns(2)
 col1.subheader("CAT Stops")
 with col1:
     html_string = mapCAT._repr_html_()
-    components.html(html_string, height=800)
+    components.html(html_string, width=700, height=800)
     """
     done
     """
