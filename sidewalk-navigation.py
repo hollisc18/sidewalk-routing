@@ -50,7 +50,7 @@ col1, col2 = st.columns(2)
 col1.header("CAT Stops")
 width = st.javascript('window.screen.width')
 with col1:
-    folium_static(mapCAT, width/3, 400)
+    folium_static(mapCAT, 500, 400)
 
 col2.header("Route to Stop:")
 with col2:
