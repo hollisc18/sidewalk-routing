@@ -35,9 +35,11 @@ st.set_page_config(layout = 'wide')
 This application was developed for pedestrians in Charlottesville to better navigate a wheelchair accessible route to their destination.
 All data is pulled from OpenStreetMap, a collaborative project to create a free and accurate geographic database of the world. 
 Code for Charlottesville has been working with OpenStreetMap to map sidewalks, curbs, and crosswalks around Cville.
-Read more about this project at https://www.codeforcville.org/sidewalk-mapping
 
-
+"""
+"""
+Interact with the map to view all of the Charlottesville bus stops in the area. 
+Enter a Charlottesville address in the sidebar to calculate the route to the closest stop and see the sidewalk maps within half a mile of the address.
 """
 
 mapCAT = folium.Map(location = [38.031704,-78.490532], tiles = 'OpenStreetMap', zoom_start = 14)
@@ -47,8 +49,8 @@ for i in CAT_union:
     name = CAT_gdf[CAT_gdf['geometry'] == i]['StopName'].to_numpy()[0]
     folium.Marker((i.y, i.x), popup=name, icon=folium.Icon(color='red', icon_color='white', icon='bus', angle=0, prefix='fa')).add_to(mapCAT)
 
-st.sidebar.subheader("Enter an address below")
-user_input = st.sidebar.text_input("(Street, City, State Zip)", "155 Rugby Rd, Charlottesville, VA 22904")
+st.sidebar.subheader("Enter an address below:")
+user_input = st.sidebar.text_input("(Street, City, State Zip)", "155 Rugby Rd, Charlottesville, VA")
 
 address = user_input
 locator = Nominatim(user_agent="geoCoder")
@@ -66,7 +68,7 @@ with col1:
     components.html(html_string, height=450)
 
 
-col2.subheader("Route to Stop:")
+col2.subheader("Route to Stop")
 
 
 #create graph of cville sidewalks
@@ -155,12 +157,8 @@ st.sidebar.subheader("Closest stop:")
 st.sidebar.write(name)
 st.sidebar.write("")
 st.sidebar.write("")
-st.sidebar.write("")
-st.sidebar.write("")
-st.sidebar.write("")
-st.sidebar.write("")
-st.sidebar.write("")
-st.sidebar.write("")
+st.sidebar.write("Read more about this project at https://www.codeforcville.org/sidewalk-mapping")
+
 """
 Source code: https://github.com/hollisc18/sidewalk-routing/edit/main/sidewalk-navigation.py
 """
