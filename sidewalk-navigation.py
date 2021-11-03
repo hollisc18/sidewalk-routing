@@ -50,9 +50,7 @@ col1, col2 = st.columns(2)
 col1.header("CAT Stops")
 with col1:
     html_string = mapCAT._repr_html_()
-    #folium_static(mapCAT, 400, 250)
-    #st.markdown(html_string, unsafe_allow_html=True)
-    components.html(html_string, height=500)
+    components.html(html_string, height=700)
 
 col2.header("Route to Stop:")
 with col2:
@@ -144,7 +142,8 @@ except:
 
     
 with col2:
-    folium_static(mapCville, 400, 250)
+    html_string2 = mapCville._repr_html_()
+    components.html(html_string2, height=700)
 
 
 """
