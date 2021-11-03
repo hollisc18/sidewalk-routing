@@ -19,6 +19,7 @@ import sys
 import overpy
 import shapely
 from streamlit_folium import folium_static
+import streamlit.components.v1 as components
 #https://discuss.streamlit.io/t/ann-streamlit-folium-a-component-for-rendering-folium-maps/4367
 from shapely.ops import nearest_points
 from geopandas.tools import geocode
@@ -50,7 +51,8 @@ col1.header("CAT Stops")
 with col1:
     html_string = mapCAT._repr_html_()
     #folium_static(mapCAT, 400, 250)
-    st.markdown(html_string, unsafe_allow_html=True)
+    #st.markdown(html_string, unsafe_allow_html=True)
+    components.html(html_string)
 
 col2.header("Route to Stop:")
 with col2:
