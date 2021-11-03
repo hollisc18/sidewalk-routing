@@ -37,7 +37,14 @@ Code for Charlottesville has been working with OpenStreetMap to map sidewalks, c
 Read more about this project at https://www.codeforcville.org/sidewalk-mapping
 """
 
-url = 'https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/mapCAT.html'
-f = urllib.request.urlopen(url)
-html_map = f.read()
-components.html(html_map)
+
+mapCAT = folium.Map(location = [38.031704,-78.490532], tiles = 'OpenStreetMap', zoom_start = 14)
+
+bus_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
+bus_union = bus_gdf.unary_union
+for i in bus_union:
+    name = bus_gdf[bus_gdf['geometry'] == i]['StopName'].to_numpy()[0]
+    folium.Marker((i.y, i.x), popup=name, icon=folium.Icon(color='red', icon_color='white', icon='bus', angle=0, prefix='fa')).add_to(mapCAT)
+    
+html_string = mapCAT.get_root().render()
+components.html(html_string)    
