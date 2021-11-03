@@ -15,4 +15,3 @@ geopy
 streamlit_folium
 keplergl
 streamlit
-PySide
