@@ -50,7 +50,7 @@ col1, col2 = st.columns(2)
 col1.header("CAT Stops")
 with col1:
     html_string = mapCAT._repr_html_()
-    components.html(html_string, height=700)
+    components.html(html_string)
 
 col2.header("Route to Stop:")
 with col2:
@@ -143,7 +143,7 @@ except:
     
 with col2:
     html_string2 = mapCville._repr_html_()
-    components.html(html_string2, height=700)
+    components.html(html_string2)
 
 
 """
