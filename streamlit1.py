@@ -5,6 +5,7 @@ import numpy as np
 import geopandas as gpd
 import requests
 import datetime
+import time
 import json, re
 import pydeck as pdk
 import pyproj
@@ -30,32 +31,46 @@ from geopy.geocoders import Nominatim
 testing testing 
 
 """
-mapCville = folium.Map(location = [38.031704,-78.490532], tiles = 'OpenStreetMap', zoom_start = 14)
-#read bus stops and add to map
-bus_gdf = gpd.read_file('https://opendata.arcgis.com/datasets/6465cd54bcf4498495be8c86a9d7c3f2_4.geojson')
-bus_json = bus_gdf.to_json()
-folium.GeoJson(bus_json, 
-            tooltip=folium.features.GeoJsonTooltip(
-                            fields=['StopName'], 
-                            aliases=["Stop Name"])
 
-).add_to(mapCville)
-#https://stackoverflow.com/questions/61136785/folium-geojsonsome-data-how-to-set-marker-type
+#https://towardsdatascience.com/nearest-neighbour-analysis-with-geospatial-data-7bcd95f34c0e
+def closest_id(r, val, c="geometry"):
+    target_geom = nearest_points(r[c], nodes_gdf.unary_union)
+    target = nodes_gdf[nodes_gdf.geometry == target_geom[1]]
+    return target.index[0]
 
-#create graph of cville sidewalks
-cville = "Charlottesville, Virginia, USA"
-G = ox.graph_from_place(cville, network_type='drive')
-#convert to geodataframe
-sidewalk_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
-#extract nodes and edges
-nodes_gdf, edges_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
+@st.cache(suppress_st_warning=True)
+def mapCreation():
+            time.sleep(2)
+            mapCville = folium.Map(location = [38.031704,-78.490532], tiles = 'OpenStreetMap', zoom_start = 14)
+            #read bus stops and add to map
+            bus_gdf = gpd.read_file('https://opendata.arcgis.com/datasets/6465cd54bcf4498495be8c86a9d7c3f2_4.geojson')
+            bus_json = bus_gdf.to_json()
+            folium.GeoJson(bus_json, 
+                        tooltip=folium.features.GeoJsonTooltip(
+                                        fields=['StopName'], 
+                                        aliases=["Stop Name"])
+            ).add_to(mapCville)
+            #https://stackoverflow.com/questions/61136785/folium-geojsonsome-data-how-to-set-marker-type
 
-style = {'fillColor': '#0064A7', 'color': '#0064A7', 'weight' : 2}
-sidewalk_json = edges_gdf.to_json()
-folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
-folium_static(mapCville)
+            #create graph of cville sidewalks
+            cville = "Charlottesville, Virginia, USA"
+            G = ox.graph_from_place(cville, network_type='drive')
+            #convert to geodataframe
+            sidewalk_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
+            #extract nodes and edges
+            nodes_gdf, edges_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
 
-user_input = st.text_input("Enter adress", "")
+            style = {'fillColor': '#0064A7', 'color': '#0064A7', 'weight' : 2}
+            sidewalk_json = edges_gdf.to_json()
+            folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
+            folium_static(mapCville)
+            
+            #create attribute of closest node id on the network to calculate route
+            bus_gdf["closest_id"] = bus_gdf.apply(closest_id, val="geometry", axis=1)
+
+mapCreation()
+
+user_input = st.text_input("Enter address", "155 Rugby Rd, Charlottesville, VA")
 
 address = user_input
 locator = Nominatim(user_agent="geoCoder")
@@ -71,14 +86,7 @@ folium.Marker((addr_lat, addr_long), popup=address,
               icon=folium.Icon(color='red', icon_color='white', 
                 icon='male', angle=0, prefix='fa')).add_to(mapRoute)
 
-#https://towardsdatascience.com/nearest-neighbour-analysis-with-geospatial-data-7bcd95f34c0e
-def closest_id(r, val, c="geometry"):
-    target_geom = nearest_points(r[c], nodes_gdf.unary_union)
-    target = nodes_gdf[nodes_gdf.geometry == target_geom[1]]
-    return target.index[0]
 
-#create attribute of closest node id on the network to calculate route
-bus_gdf["closest_id"] = bus_gdf.apply(closest_id, val="geometry", axis=1)
 address_gdf["closest_id"] = address_gdf.apply(closest_id, val="geometry", axis=1)
 addr_ID = address_gdf['closest_id'].to_numpy()[0]
 
