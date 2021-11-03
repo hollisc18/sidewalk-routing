@@ -33,5 +33,5 @@ hello
 
 """
 
-m = leafmap.Map()
+m = leafmap.Map(center=(38.0336,-78.5080), zoom=14, width=450, height=500)
 m.to_streamlit()
