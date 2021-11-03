@@ -63,7 +63,7 @@ col1, col2 = st.columns(2)
 col1.subheader("CAT Stops")
 with col1:
     html_string = mapCAT.get_root().render()
-    components.html(html_string, height=1000)
+    components.html(html_string, height=600)
 
 
 col2.subheader("Route to Stop:")
@@ -147,8 +147,8 @@ except:
 
     
 with col2:
-    html_string2 = mapCville._repr_html_()
-    components.html(html_string2, height=1000)
+    html_string2 = mapCville.get_root().render()
+    components.html(html_string2, height=600)
 
 st.sidebar.write("")
 st.sidebar.write("Closest stop:")    
