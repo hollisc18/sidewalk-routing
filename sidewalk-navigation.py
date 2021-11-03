@@ -48,7 +48,9 @@ for i in CAT_union:
 col1, col2 = st.columns(2)
 col1.header("CAT Stops")
 with col1:
-    folium_static(mapCAT, 400, 250)
+    html_string = mapCAT.get_root().render()
+    #folium_static(mapCAT, 400, 250)
+    st.markdown(html_string, unsafe_allow_html=True)
 
 col2.header("Route to Stop:")
 with col2:
