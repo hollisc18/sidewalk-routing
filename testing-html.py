@@ -35,3 +35,6 @@ All data is pulled from OpenStreetMap, a collaborative project to create a free 
 Code for Charlottesville has been working with OpenStreetMap to map sidewalks, curbs, and crosswalks around Cville.
 Read more about this project at https://www.codeforcville.org/sidewalk-mapping
 """
+
+html_string = 'https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/mapCAT.html'
+components.html(html_string)
