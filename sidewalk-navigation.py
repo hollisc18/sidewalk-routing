@@ -130,6 +130,7 @@ folium.GeoJson(route_json, style_function=lambda x:route_style).add_to(mapCville
 target_stop = bus_gdf[bus_gdf.closest_id == short_path[-1]]
 target_union = target_stop.unary_union
 
+name = ""
 try:
     for t in target_union:
         name = bus_gdf[bus_gdf['geometry'] == t]['StopName'].to_numpy()[0]
@@ -147,12 +148,12 @@ except:
 with col2:
     html_string2 = mapCville._repr_html_()
     components.html(html_string2)
-    
-sched_url = 'https://www.charlottesville.gov/481/CAT-Schedules-Maps'
 
-button_cat = st.sidebar.button("CAT Schedule")
-if button_cat:
-    webbrowser.open_new_tab(sched_url)
+st.sidebar.write("Closest stop name:")    
+st.sidebar.write(name)
+st.sidebar.write("")
+st.sidebar.write("")
+st.sidebar.write("")
 st.sidebar.write("")
 st.sidebar.write("")
 st.sidebar.write("Source code: https://github.com/hollisc18/sidewalk-routing/edit/main/sidewalk-navigation.py")
