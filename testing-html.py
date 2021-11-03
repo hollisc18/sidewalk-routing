@@ -75,9 +75,26 @@ def create_graph():
     edges2_gdf = edges_gdf[edges_gdf['highway'] == 'footway']
     return edges2_gdf.to_json()
 
+def make_g():
+    G = ox.graph_from_place("Charlottesville, Virginia, USA", network_type='walk')
+    return G
+def make_sw():
+    sidewalk_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
+    return sidewalk_gdf
+def nodes_edges():
+    nodes_gdf, edges_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
+    return nodes_gdf, edges_gdf
+
+def edges2():
+    edges2_gdf = edges_gdf[edges_gdf['highway'] == 'footway']
+    return edges2_gdf
+
 @st.cache
 def map2():
-    sidewalk_json = create_graph()
+    G = make_G()
+    sidewalk_gdf = make_sw()
+    nodes_gdf, edges_gdf = nodes_edges()
+    sidewalk_json = edges2().to_json()
     mapCville = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap', zoom_start = 15)
     style = {'fillColor': '#B44700', 'color': '#B44700', 'weight' : 1.5, 'opacity': 0.7}
     folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
@@ -87,40 +104,5 @@ def map2():
 with col2:
     components.html(map2())
     
-st.sidebar.subheader("Enter an address below:")
-user_input = st.sidebar.text_input("(Street, City, State Zip)", "155 Rugby Rd, Charlottesville, VA")
-
-address = user_input
-locator = Nominatim(user_agent="geoCoder")
-location = locator.geocode(address)
-
-addr_lat = location.latitude
-addr_long = location.longitude
-address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
-address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
-
-#https://towardsdatascience.com/nearest-neighbour-analysis-with-geospatial-data-7bcd95f34c0e
-def closest_id(r, val, c="geometry"):
-    target_geom = nearest_points(r[c], nodes_gdf.unary_union)
-    target = nodes_gdf[nodes_gdf.geometry == target_geom[1]]
-    return target.index[0]
-
-address_gdf["closest_id"] = address_gdf.apply(closest_id, val="geometry", axis=1)
-addr_ID = address_gdf['closest_id'].to_numpy()[0]
-
-G2 = G
-stop_ids = bus_gdf["closest_id"]
-short_len = sys.maxsize
-short_path = []
-for i in stop_ids.index:
-    try:
-        r = nx.shortest_path(G2, addr_ID, stop_ids[i], weight='length')
-        len = nx.shortest_path_length(G2, addr_ID, stop_ids[i], weight='length')
-        if (len < short_len):
-            short_len = len
-            short_path = r
-    except:
-        pass
-
 
 
