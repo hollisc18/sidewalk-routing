@@ -13,3 +13,4 @@ osmnx
 overpy
 geopy
 streamlit_folium
+leafmap.foliumap
