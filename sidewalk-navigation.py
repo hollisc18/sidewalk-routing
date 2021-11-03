@@ -161,4 +161,6 @@ st.sidebar.write("")
 st.sidebar.write("")
 st.sidebar.write("")
 st.sidebar.write("")
-st.sidebar.write("Source code: https://github.com/hollisc18/sidewalk-routing/edit/main/sidewalk-navigation.py")
+"""
+Source code: https://github.com/hollisc18/sidewalk-routing/edit/main/sidewalk-navigation.py
+"""
