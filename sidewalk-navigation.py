@@ -47,9 +47,8 @@ for i in CAT_union:
 
 col1, col2 = st.columns(2)
 col1.header("CAT Stops")
-width = st.javascript('window.screen.width')
 with col1:
-    folium_static(mapCAT, 500, 400)
+    folium_static(mapCAT, 400, 250)
 
 col2.header("Route to Stop:")
 with col2:
@@ -141,7 +140,7 @@ except:
 
     
 with col2:
-    folium_static(mapCville, 500, 400)
+    folium_static(mapCville, 400, 250)
 
 
 """
