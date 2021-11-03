@@ -46,8 +46,8 @@ for i in CAT_union:
     name = CAT_gdf[CAT_gdf['geometry'] == i]['StopName'].to_numpy()[0]
     folium.Marker((i.y, i.x), popup=name, icon=folium.Icon(color='red', icon_color='white', icon='bus', angle=0, prefix='fa')).add_to(mapCAT)
 
+st.sidebar(user_input = st.text_input("Enter a Charlottesville address: ", "155 Rugby Rd, Charlottesville, VA 22904"))
 
-user_input = st.text_input("Enter a Charlottesville address: ", "155 Rugby Rd, Charlottesville, VA 22904")
 
 address = user_input
 locator = Nominatim(user_agent="geoCoder")
