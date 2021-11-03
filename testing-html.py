@@ -73,13 +73,13 @@ def create_graph():
     #extract nodes and edges
     nodes_gdf, edges_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
     edges2_gdf = edges_gdf[edges_gdf['highway'] == 'footway']
+    return edges2_gdf.to_json()
 
 @st.cache
 def map2():
-    create_graph()
+    sidewalk_json = create_graph()
     mapCville = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap', zoom_start = 15)
     style = {'fillColor': '#B44700', 'color': '#B44700', 'weight' : 1.5, 'opacity': 0.7}
-    sidewalk_json = edges2_gdf.to_json()
     folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
     mapCville = add_bus(mapCville)
     return mapCville.get_root().render()
