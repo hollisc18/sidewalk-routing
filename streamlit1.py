@@ -33,3 +33,5 @@ hello
 
 """
 
+m = leafmap.Map()
+m.to_streamlit()
