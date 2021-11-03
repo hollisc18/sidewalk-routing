@@ -24,6 +24,7 @@ import streamlit.components.v1 as components
 from shapely.ops import nearest_points
 from geopandas.tools import geocode
 import geopy
+import urllib
 from geopy.geocoders import Nominatim
 
 st.set_page_config(layout = 'wide')
@@ -36,5 +37,7 @@ Code for Charlottesville has been working with OpenStreetMap to map sidewalks, c
 Read more about this project at https://www.codeforcville.org/sidewalk-mapping
 """
 
-html_string = 'https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/mapCAT.html'
-components.html(html_string)
+url = 'https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/mapCAT.html'
+f = urllib.urlopen(url)
+html_map = f.read()
+components.html(html_map)
