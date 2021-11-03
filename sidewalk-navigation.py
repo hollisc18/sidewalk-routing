@@ -151,7 +151,7 @@ with col2:
     components.html(html_string2, height=450)
 
 st.sidebar.write("")
-st.sidebar.subheader.write("Closest stop:")    
+st.sidebar.subheader("Closest stop:")    
 st.sidebar.write(name)
 st.sidebar.write("")
 st.sidebar.write("")
