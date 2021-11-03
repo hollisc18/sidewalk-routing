@@ -25,6 +25,8 @@ from geopandas.tools import geocode
 import geopy
 from geopy.geocoders import Nominatim
 
+st.set_page_config(layout = 'wide')
+
 """
 # Sidewalk Navigation to CAT Bus Stops in Charlottesville
 
@@ -45,7 +47,8 @@ for i in CAT_union:
 
 col1, col2 = st.columns(2)
 col1.header("CAT Stops")
-col1.folium_static(mapCAT)
+with col1:
+    folium_static(mapCAT)
 
 user_input = st.text_input("Enter a Charlottesville address: ", "155 Rugby Rd, Charlottesville, VA 22904")
 
