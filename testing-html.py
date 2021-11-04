@@ -39,7 +39,7 @@ Code for Charlottesville has been working with OpenStreetMap to map sidewalks, c
 Interact with the map to view all of the Charlottesville bus stops in the area. 
 Enter a Charlottesville address in the sidebar to calculate the route to the closest stop and see the sidewalk maps within half a mile of the address.
 """
-global bus_gdf
+global bus_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
 global G
 global sidewalk_gdf
 global edges_gdf
@@ -88,5 +88,16 @@ def map2():
 with col2:
     components.html(map2())
     
+st.sidebar.subheader("Enter an address below:")
+user_input = st.sidebar.text_input("(Street, City, State Zip)", "155 Rugby Rd, Charlottesville, VA")
+
+address = user_input
+locator = Nominatim(user_agent="geoCoder")
+location = locator.geocode(address)
+
+addr_lat = location.latitude
+addr_long = location.longitude
+address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
+address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
 
 
