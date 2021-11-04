@@ -153,3 +153,4 @@ except:
     mapRoute.fit_bounds([[addr_lat,addr_long], [target_union.y, target_union.x]])
 
     
+components.html(mapRoute.get_root().render())
