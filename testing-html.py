@@ -66,8 +66,7 @@ def create_graph():
 
 def base_map():
     edges_path_gdf = create_graph()[create_graph()['highway'] == 'footway']
-    sidewalkdef get_route():
-        _json = create_graph().to_json()
+    sidewalk_json = create_graph().to_json()
     mapCville = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap', zoom_start = 15)
     style = {'fillColor': '#B44700', 'color': '#B44700', 'weight' : 1.5, 'opacity': 0.7}
     folium.GeoJson(sidewalk_json, style_function=lambda x:style).add_to(mapCville)
@@ -101,7 +100,7 @@ def closest_id(r, val, c="geometry"):
 def read_CAT():
     CAT_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
     return CAT_gdf
-read_CAT()
+
 def find_path():
     CAT_gdf = read_CAT()
     busLat = CAT_gdf[ abs(CAT_gdf['Latitude']-addr_lat) <  0.01 ] 
