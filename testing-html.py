@@ -125,7 +125,6 @@ route_gdf.rename( columns={0 :'geometry'}, inplace=True)
 
 target_stop = bus_gdf[bus_gdf.closest_id == short_path[-1]]
 target_union = target_stop.unary_union
-global n
 
 def mapRoute(addr_lat, addr_long, address, target_union, bus_gdf, route_gdf):
     mapRoute = map1()
@@ -146,7 +145,6 @@ def mapRoute(addr_lat, addr_long, address, target_union, bus_gdf, route_gdf):
 
     except:
         name = bus_gdf[bus_gdf['geometry'] == target_union]['StopName'].to_numpy()[0]
-        n=name
         folium.Marker((target_union.y, target_union.x), popup=name, icon=folium.Icon(color='red', icon_color='white', 
                         icon='bus', angle=0, prefix='fa')).add_to(mapRoute)
         mapRoute.fit_bounds([[addr_lat,addr_long], [target_union.y, target_union.x]])
@@ -158,10 +156,11 @@ def m2Html():
 
 with col2:
     components.html(m2Html(), height=450)
-    
+
+name = bus_gdf[bus_gdf['geometry'] == target_union]['StopName'].to_numpy()[0]
 st.sidebar.write("")
 st.sidebar.subheader("Closest stop:")    
-st.sidebar.write(n)
+st.sidebar.write(name)
 st.sidebar.write("")
 st.sidebar.write("")
 st.sidebar.write("Read more about this project at https://www.codeforcville.org/sidewalk-mapping")
