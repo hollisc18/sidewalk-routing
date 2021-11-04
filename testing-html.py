@@ -97,7 +97,6 @@ address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitud
 address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
 
 mapRoute = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap', zoom_start = 15)
-
 folium.Marker((addr_lat, addr_long), popup=address, 
               icon=folium.Icon(color='darkblue', icon_color='white', 
                 icon='male', angle=0, prefix='fa')).add_to(mapRoute)
@@ -108,7 +107,11 @@ def closest_id(r, val, c="geometry"):
     target = nodes_gdf[nodes_gdf.geometry == target_geom[1]]
     return target.index[0]
 
-bus_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
+
+CAT_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
+busLat = CAT_gdf[ abs(CAT_gdf['Latitude']-addr_lat) <  0.01 ] 
+bus_gdf = busLat[ abs(busLat['Longitude']-addr_long) <  0.01]
+
 address_gdf["closest_id"] = address_gdf.apply(closest_id, val="geometry", axis=1)
 addr_ID = address_gdf['closest_id'].to_numpy()[0]
 
