@@ -58,7 +58,7 @@ col1, col2 = st.columns(2)
 col1.subheader("CAT Stops")
 col2.subheader("Route to Stop:")
 with col1:
-    components.html(map1())
+    components.html(map1(), height=450)
 
 def create_graph():
     G = ox.graph_from_place("Charlottesville, Virginia, USA", network_type='walk')
@@ -155,5 +155,16 @@ except:
                     icon='bus', angle=0, prefix='fa')).add_to(mapRoute)
     mapRoute.fit_bounds([[addr_lat,addr_long], [target_union.y, target_union.x]])
 
+with col2:
+    components.html(mapRoute.get_root().render(), height=450)
     
-components.html(mapRoute.get_root().render())
+st.sidebar.write("")
+st.sidebar.subheader("Closest stop:")    
+st.sidebar.write(name)
+st.sidebar.write("")
+st.sidebar.write("")
+st.sidebar.write("Read more about this project at https://www.codeforcville.org/sidewalk-mapping")
+
+"""
+Source code: https://github.com/hollisc18/sidewalk-routing/edit/main/sidewalk-navigation.py
+"""
