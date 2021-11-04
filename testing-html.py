@@ -39,12 +39,6 @@ Code for Charlottesville has been working with OpenStreetMap to map sidewalks, c
 Interact with the map to view all of the Charlottesville bus stops in the area. 
 Enter a Charlottesville address in the sidebar to calculate the route to the closest stop and see the sidewalk maps within half a mile of the address.
 """
-global bus_gdf
-global G
-global sidewalk_gdf
-global edges_gdf
-global edges2_gdf
-global nodes_gdf
 
 def add_bus(m):
     bus_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
@@ -102,4 +96,13 @@ addr_long = location.longitude
 address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
 address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
 
+G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf = create_graph()
+def closest_id(r, val, c="geometry"):
+    target_geom = nearest_points(r[c], nodes_gdf.unary_union)
+    target = nodes_gdf[nodes_gdf.geometry == target_geom[1]]
+    return target.index[0]
+
+bus_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
+address_gdf["closest_id"] = address_gdf.apply(closest_id, val="geometry", axis=1)
+addr_ID = address_gdf['closest_id'].to_numpy()[0]
 
