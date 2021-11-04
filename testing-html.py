@@ -62,7 +62,6 @@ def create_graph():
     return G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf
 
 
-@st.cache
 def map1():
     G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf = create_graph()
     sidewalk_json = edges2_gdf.to_json()
@@ -72,8 +71,11 @@ def map1():
     mapCville = add_bus(mapCville)
     return mapCville
 
+@st.cache
+def m1Html():
+    return map1().get_root().render()
 with col1:
-    components.html(map1().get_root().render(), height=450)
+    components.html(m1Html(), height=450)
     
 st.sidebar.subheader("Enter an address below:")
 user_input = st.sidebar.text_input("(Street, City, State Zip)", "155 Rugby Rd, Charlottesville, VA")
@@ -124,7 +126,7 @@ route_gdf.rename( columns={0 :'geometry'}, inplace=True)
 target_stop = bus_gdf[bus_gdf.closest_id == short_path[-1]]
 target_union = target_stop.unary_union
 global n
-@st.cache
+
 def mapRoute(addr_lat, addr_long, address, target_union, bus_gdf, route_gdf):
     mapRoute = map1()
     folium.Marker((addr_lat, addr_long), popup=address, 
@@ -149,9 +151,13 @@ def mapRoute(addr_lat, addr_long, address, target_union, bus_gdf, route_gdf):
                         icon='bus', angle=0, prefix='fa')).add_to(mapRoute)
         mapRoute.fit_bounds([[addr_lat,addr_long], [target_union.y, target_union.x]])
     return mapRoute
-    
+
+@st.cache
+def m2Html():
+    return mapRoute(addr_lat, addr_long, address, target_union, bus_gdf, route_gdf).get_root().render()
+
 with col2:
-    components.html(mapRoute(addr_lat, addr_long, address, target_union, bus_gdf, route_gdf).get_root().render(), height=450)
+    components.html(m2Html(), height=450)
     
 st.sidebar.write("")
 st.sidebar.subheader("Closest stop:")    
