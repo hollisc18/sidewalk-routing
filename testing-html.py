@@ -39,7 +39,8 @@ Code for Charlottesville has been working with OpenStreetMap to map sidewalks, c
 Interact with the map to view all of the Charlottesville bus stops in the area. 
 Enter a Charlottesville address in the sidebar to calculate the route to the closest stop and see the sidewalk maps within half a mile of the address.
 """
-global bus_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
+global bus_gdf
+bus_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
 global G
 global sidewalk_gdf
 global edges_gdf
@@ -47,7 +48,6 @@ global edges2_gdf
 global nodes_gdf
 
 def add_bus(m):
-    bus_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
     bus_union = bus_gdf.unary_union
     for i in bus_union:
         name = bus_gdf[bus_gdf['geometry'] == i]['StopName'].to_numpy()[0]
