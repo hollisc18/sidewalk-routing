@@ -57,8 +57,6 @@ def map1():
 col1, col2 = st.columns(2)
 col1.subheader("CAT Stops")
 col2.subheader("Route to Stop:")
-with col1:
-    components.html(map1(), height=450)
 
 def create_graph():
     G = ox.graph_from_place("Charlottesville, Virginia, USA", network_type='walk')
@@ -81,8 +79,8 @@ def map2():
     mapCville = add_bus(mapCville)
     return mapCville.get_root().render()
 
-with col2:
-    components.html(map2())
+with col1:
+    components.html(map2(), height=450)
     
 st.sidebar.subheader("Enter an address below:")
 user_input = st.sidebar.text_input("(Street, City, State Zip)", "155 Rugby Rd, Charlottesville, VA")
