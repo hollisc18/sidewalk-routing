@@ -151,7 +151,7 @@ except:
 @st.cache
 def m2Html():
     m2 = map1(addr_lat, addr_long, address, target, name, route_gdf).get_root().render()
-    return m2Html
+    return m2
 with col2:
     components.html(m2Html(), height=450)
 
