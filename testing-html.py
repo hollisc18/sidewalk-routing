@@ -77,84 +77,93 @@ def m1Html():
 with col1:
     components.html(m1Html(), height=450)
     
-st.sidebar.subheader("Enter an address below:")
-user_input = st.sidebar.text_input("(Street, City, State Zip)", "1215 Lee St, Charlottesville, VA 22903")
 
-address = user_input
-locator = Nominatim(user_agent="geoCoder")
-location = locator.geocode(address)
+def map2(addr_lat, addr_long, address, route_gdf, stop_geom, name):
+    mapRoute = map1()
+    folium.Marker((addr_lat, addr_long), popup=address, 
+                  icon=folium.Icon(color='darkblue', icon_color='white', 
+                    icon='male', angle=0, prefix='fa')).add_to(mapRoute)
+    route_style = {'fillColor': '#00E6FF', 'color': '#00E6FF', 'weight' : 6}
+    route_json = route_gdf.to_json()
+    folium.GeoJson(route_json, style_function=lambda x:route_style).add_to(mapRoute)
+    folium.Marker((stop_geom.y, stop_geom.x), popup=name, icon=folium.Icon(color='red', icon_color='white', icon='bus', angle=0, prefix='fa')).add_to(mapRoute)
+    mapRoute.fit_bounds([[addr_lat,addr_long], [stop_geom.y, stop_geom.x]])
+    return mapRoute
 
-addr_lat = location.latitude
-addr_long = location.longitude
-address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
-address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
+def create_route(addr_lat, addr_long, address, short_path, edges_gdf, bus_gdf):
 
-mapRoute = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap', zoom_start = 15)
-folium.Marker((addr_lat, addr_long), popup=address, 
-              icon=folium.Icon(color='darkblue', icon_color='white', 
-                icon='male', angle=0, prefix='fa')).add_to(mapRoute)
+    route_pairwise = zip(short_path[:-1], short_path[1:])
+    route = [edges_gdf.loc[edge, 'geometry'].iloc[0] for edge in route_pairwise]
+    route_gdf = gpd.GeoDataFrame(route)
+    route_gdf.rename( columns={0 :'geometry'}, inplace=True)
 
-G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf = create_graph()
+    target_stop = bus_gdf[bus_gdf.closest_id == short_path[-1]]
+    target_union = target_stop.unary_union
+    stop_geom = ""
+    name = ""
+    try:
+        for t in target_union:
+            name = bus_gdf[bus_gdf['geometry'] == t]['StopName'].to_numpy()[0]
+            stop_geom = t
+    except:
+        name = bus_gdf[bus_gdf['geometry'] == target_union]['StopName'].to_numpy()[0]
+        stop_geom = target_union
+    
+    return map2(addr_lat, addr_long, address, route_gdf, stop_geom, name)
+
+def find_path(addr_lat, addr_long, bus_gdf, addr_ID, address):
+    G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf = create_graph()
+    stop_ids = bus_gdf["closest_id"]
+    short_len = sys.maxsize
+    short_path = []
+    for i in stop_ids.index:
+        try:
+            r = nx.shortest_path(G, addr_ID, stop_ids[i], weight='length')
+            len = nx.shortest_path_length(G, addr_ID, stop_ids[i], weight='length')
+            if (len < short_len):
+                short_len = len
+                short_path = r
+        except:
+            pass
+    return create_route(addr_lat, addr_long, address, short_path, edges_gdf, bus_gdf)
 
 def closest_id(r, val, c="geometry"):
     target_geom = nearest_points(r[c], nodes_gdf.unary_union)
     target = nodes_gdf[nodes_gdf.geometry == target_geom[1]]
     return target.index[0]
+                 
+def connect_addr(addr_lat, addr_long, address_gdf, address):
+    CAT_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
+    busLat = CAT_gdf[ abs(CAT_gdf['Latitude']-addr_lat) <  0.01 ] 
+    bus_gdf = busLat[ abs(busLat['Longitude']-addr_long) <  0.01]
+    address_gdf["closest_id"] = address_gdf.apply(closest_id, val="geometry", axis=1)
+    addr_ID = address_gdf['closest_id'].to_numpy()[0]
+    return find_path(addr_lat, addr_long, bus_gdf, addr_ID, address)
 
-CAT_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
 
-busLat = CAT_gdf[ abs(CAT_gdf['Latitude']-addr_lat) <  0.01 ] 
-bus_gdf = busLat[ abs(busLat['Longitude']-addr_long) <  0.01]
+def address_to_map(user_input):  
+    address = user_input
+    locator = Nominatim(user_agent="geoCoder")
+    location = locator.geocode(address)
+    addr_lat = location.latitude
+    addr_long = location.longitude
+    address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
+    address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
+    return connect_addr(addr_lat, addr_long, address_gdf, address)
 
-address_gdf["closest_id"] = address_gdf.apply(closest_id, val="geometry", axis=1)
-addr_ID = address_gdf['closest_id'].to_numpy()[0]
+@st.cache
+def m2Html(user_input):
+    return address_to_map(user_input).get_root().render()
 
-G2 = G
-stop_ids = bus_gdf["closest_id"]
-short_len = sys.maxsize
-short_path = []
-for i in stop_ids.index:
-    try:
-        r = nx.shortest_path(G2, addr_ID, stop_ids[i], weight='length')
-        len = nx.shortest_path_length(G2, addr_ID, stop_ids[i], weight='length')
-        if (len < short_len):
-            short_len = len
-            short_path = r
-    except:
-        pass
-
-route_pairwise = zip(short_path[:-1], short_path[1:])
-route = [edges_gdf.loc[edge, 'geometry'].iloc[0] for edge in route_pairwise]
-route_gdf = gpd.GeoDataFrame(route)
-route_gdf.rename( columns={0 :'geometry'}, inplace=True)
-
-route_style = {'fillColor': '#00E6FF', 'color': '#00E6FF', 'weight' : 6}
-route_json = route_gdf.to_json()
-folium.GeoJson(route_json, style_function=lambda x:route_style).add_to(mapRoute)
-
-target_stop = bus_gdf[bus_gdf.closest_id == short_path[-1]]
-target_union = target_stop.unary_union
-
-name = ""
-try:
-    for t in target_union:
-        name = bus_gdf[bus_gdf['geometry'] == t]['StopName'].to_numpy()[0]
-        folium.Marker((t.y, t.x), popup=name, icon=folium.Icon(color='red', icon_color='white', 
-                    icon='bus', angle=0, prefix='fa')).add_to(mapRoute)
-        mapRoute.fit_bounds([[addr_lat,addr_long], [t.y, t.x]])
-
-except:
-    name = bus_gdf[bus_gdf['geometry'] == target_union]['StopName'].to_numpy()[0]
-    folium.Marker((target_union.y, target_union.x), popup=name, icon=folium.Icon(color='red', icon_color='white', 
-                    icon='bus', angle=0, prefix='fa')).add_to(mapRoute)
-    mapRoute.fit_bounds([[addr_lat,addr_long], [target_union.y, target_union.x]])
+st.sidebar.subheader("Enter an address below:")
+user_input = st.sidebar.text_input("(Street, City, State Zip)", "1215 Lee St, Charlottesville, VA 22903")
 
 with col2:
-    components.html(mapRoute.get_root().render(), height=450)
+    components.html(m2Html(user_input), height=450)
     
 st.sidebar.write("")
-st.sidebar.subheader("Closest stop:")    
-st.sidebar.write(name)
+#st.sidebar.subheader("Closest stop:")    
+#st.sidebar.write(name)
 st.sidebar.write("")
 st.sidebar.write("")
 st.sidebar.write("Read more about this project at https://www.codeforcville.org/sidewalk-mapping")
