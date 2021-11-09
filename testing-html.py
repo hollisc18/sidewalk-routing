@@ -142,22 +142,19 @@ def connect_addr(addr_lat, addr_long, address_gdf, address):
     return find_path(addr_lat, addr_long, bus_gdf, addr_ID, address, edges_gdf, G)
 
 
-def address_to_map(user_input):  
-    address = user_input
-    locator = Nominatim(user_agent="geoCoder")
-    location = locator.geocode(address)
-    addr_lat = location.latitude
-    addr_long = location.longitude
-    address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
-    address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
-    return connect_addr(addr_lat, addr_long, address_gdf, address)
-
 st.sidebar.subheader("Enter an address below:")
 user_input = st.sidebar.text_input("(Street, City, State Zip)", "1215 Lee St, Charlottesville, VA 22903")
+address = user_input
+locator = Nominatim(user_agent="geoCoder")
+location = locator.geocode(address)
+addr_lat = location.latitude
+addr_long = location.longitude
+address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
+address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
 
 @st.cache
 def calculate_route(user_input):
-    return address_to_map(user_input).get_root().render()
+    return connect_addr(addr_lat, addr_long, address_gdf, address).get_root().render()
 
 with col2:
     components.html(calculate_route(user_input), height=450)
