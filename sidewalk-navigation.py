@@ -88,6 +88,8 @@ addr_lat = location.latitude
 addr_long = location.longitude
 address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
 address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
+st.sidebar.write(addr_lat)
+st.sidebar.write(addr_long)
 
 mapRoute = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap', zoom_start = 15)
 folium.Marker((addr_lat, addr_long), popup=address, 
