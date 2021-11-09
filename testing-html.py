@@ -152,14 +152,15 @@ def address_to_map(user_input):
     address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
     return connect_addr(addr_lat, addr_long, address_gdf, address)
 
+st.sidebar.subheader("Enter an address below:")
+user_input = st.sidebar.text_input("(Street, City, State Zip)", "1215 Lee St, Charlottesville, VA 22903")
+
 @st.cache
-def m2Html():
-    st.sidebar.subheader("Enter an address below:")
-    user_input = st.sidebar.text_input("(Street, City, State Zip)", "1215 Lee St, Charlottesville, VA 22903")
+def m2Html(user_input):
     return address_to_map(user_input).get_root().render()
 
 with col2:
-    components.html(m2Html(), height=450)
+    components.html(m2Html(user_input), height=450)
     
 st.sidebar.write("")
 #st.sidebar.subheader("Closest stop:")    
