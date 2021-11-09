@@ -137,7 +137,7 @@ def connect_addr(addr_lat, addr_long, address_gdf, address):
     CAT_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
     busLat = CAT_gdf[ abs(CAT_gdf['Latitude']-addr_lat) <  0.01 ] 
     bus_gdf = busLat[ abs(busLat['Longitude']-addr_long) <  0.01]
-    address_gdf["closest_id"] = address_gdf.apply(closest_id, nodes_gdf, val="geometry", axis=1)
+    address_gdf["closest_id"] = address_gdf.apply(closest_id, nodes_gdf=nodes_gdf, val="geometry", axis=1)
     addr_ID = address_gdf['closest_id'].to_numpy()[0]
     return find_path(addr_lat, addr_long, bus_gdf, addr_ID, address, edges_gdf, G)
 
