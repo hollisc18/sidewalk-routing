@@ -111,8 +111,8 @@ def create_route(addr_lat, addr_long, address, short_path, edges_gdf, bus_gdf):
     
     return map2(addr_lat, addr_long, address, route_gdf, stop_geom, name)
 
-def find_path(addr_lat, addr_long, bus_gdf, addr_ID, address):
-    G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf = create_graph()
+def find_path(addr_lat, addr_long, bus_gdf, addr_ID, address, edges_gdf, G):
+
     stop_ids = bus_gdf["closest_id"]
     short_len = sys.maxsize
     short_path = []
@@ -127,18 +127,19 @@ def find_path(addr_lat, addr_long, bus_gdf, addr_ID, address):
             pass
     return create_route(addr_lat, addr_long, address, short_path, edges_gdf, bus_gdf)
 
-def closest_id(r, val, c="geometry"):
+def closest_id(r, nodes_gdf, val, c="geometry"):
     target_geom = nearest_points(r[c], nodes_gdf.unary_union)
     target = nodes_gdf[nodes_gdf.geometry == target_geom[1]]
     return target.index[0]
                  
 def connect_addr(addr_lat, addr_long, address_gdf, address):
+    G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf = create_graph()
     CAT_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
     busLat = CAT_gdf[ abs(CAT_gdf['Latitude']-addr_lat) <  0.01 ] 
     bus_gdf = busLat[ abs(busLat['Longitude']-addr_long) <  0.01]
-    address_gdf["closest_id"] = address_gdf.apply(closest_id, val="geometry", axis=1)
+    address_gdf["closest_id"] = address_gdf.apply(closest_id, nodes_gdf, val="geometry", axis=1)
     addr_ID = address_gdf['closest_id'].to_numpy()[0]
-    return find_path(addr_lat, addr_long, bus_gdf, addr_ID, address)
+    return find_path(addr_lat, addr_long, bus_gdf, addr_ID, address, edges_gdf, G)
 
 
 def address_to_map(user_input):  
