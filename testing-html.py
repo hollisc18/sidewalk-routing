@@ -89,18 +89,10 @@ addr_long = location.longitude
 address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
 address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
 
-def mapRoute(addr_lat, addr_long, address, target, name, route_gdf):
-    mapRoute = map1()
-    folium.Marker((addr_lat, addr_long), popup=address, 
+mapRoute = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap', zoom_start = 15)
+folium.Marker((addr_lat, addr_long), popup=address, 
               icon=folium.Icon(color='darkblue', icon_color='white', 
                 icon='male', angle=0, prefix='fa')).add_to(mapRoute)
-    folium.Marker((target.y, target.x), popup=name, icon=folium.Icon(color='red', icon_color='white', 
-                    icon='bus', angle=0, prefix='fa')).add_to(mapRoute)
-    route_style = {'fillColor': '#00E6FF', 'color': '#00E6FF', 'weight' : 6}
-    route_json = route_gdf.to_json()
-    folium.GeoJson(route_json, style_function=lambda x:route_style).add_to(mapRoute)
-    mapRoute.fit_bounds([[addr_lat,addr_long], [target.y, target.x]])
-    return mapRoute
 
 G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf = create_graph()
 
@@ -136,25 +128,30 @@ route = [edges_gdf.loc[edge, 'geometry'].iloc[0] for edge in route_pairwise]
 route_gdf = gpd.GeoDataFrame(route)
 route_gdf.rename( columns={0 :'geometry'}, inplace=True)
 
+route_style = {'fillColor': '#00E6FF', 'color': '#00E6FF', 'weight' : 6}
+route_json = route_gdf.to_json()
+folium.GeoJson(route_json, style_function=lambda x:route_style).add_to(mapRoute)
+
 target_stop = bus_gdf[bus_gdf.closest_id == short_path[-1]]
 target_union = target_stop.unary_union
 
 name = ""
-target = target_union
 try:
     for t in target_union:
         name = bus_gdf[bus_gdf['geometry'] == t]['StopName'].to_numpy()[0]
-        target = t
+        folium.Marker((t.y, t.x), popup=name, icon=folium.Icon(color='red', icon_color='white', 
+                    icon='bus', angle=0, prefix='fa')).add_to(mapRoute)
+        mapRoute.fit_bounds([[addr_lat,addr_long], [t.y, t.x]])
+
 except:
     name = bus_gdf[bus_gdf['geometry'] == target_union]['StopName'].to_numpy()[0]
+    folium.Marker((target_union.y, target_union.x), popup=name, icon=folium.Icon(color='red', icon_color='white', 
+                    icon='bus', angle=0, prefix='fa')).add_to(mapRoute)
+    mapRoute.fit_bounds([[addr_lat,addr_long], [target_union.y, target_union.x]])
 
-@st.cache
-def m2Html():
-    m2 = map1(addr_lat, addr_long, address, target, name, route_gdf).get_root().render()
-    return m2
 with col2:
-    components.html(m2Html(), height=450)
-
+    components.html(mapRoute.get_root().render(), height=450)
+    
 st.sidebar.write("")
 st.sidebar.subheader("Closest stop:")    
 st.sidebar.write(name)
