@@ -156,11 +156,11 @@ st.sidebar.subheader("Enter an address below:")
 user_input = st.sidebar.text_input("(Street, City, State Zip)", "1215 Lee St, Charlottesville, VA 22903")
 
 @st.cache
-def m2Html(user_input):
+def calculate_route(user_input):
     return address_to_map(user_input).get_root().render()
 
 with col2:
-    components.html(m2Html(user_input), height=450)
+    components.html(calculate_route(user_input), height=450)
     
 st.sidebar.write("")
 #st.sidebar.subheader("Closest stop:")    
