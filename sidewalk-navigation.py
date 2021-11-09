@@ -94,7 +94,6 @@ mapRoute = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap'
 folium.Marker((addr_lat, addr_long), popup=address, 
               icon=folium.Icon(color='darkblue', icon_color='white', 
                 icon='male', angle=0, prefix='fa')).add_to(mapRoute)
-st.sidebar.write("hi")
 
 G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf = create_graph()
 
