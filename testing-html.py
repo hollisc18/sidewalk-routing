@@ -153,11 +153,11 @@ address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitud
 address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
 
 @st.cache
-def calculate_route(user_input):
+def calculate_route():
     return connect_addr(addr_lat, addr_long, address_gdf, address).get_root().render()
 
 with col2:
-    components.html(calculate_route(user_input), height=450)
+    components.html(calculate_route(), height=450)
     
 st.sidebar.write("")
 #st.sidebar.subheader("Closest stop:")    
