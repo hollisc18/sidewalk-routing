@@ -40,6 +40,7 @@ Interact with the map to view all of the Charlottesville bus stops and sidewalk 
 Enter a Charlottesville address in the sidebar to calculate the route to the closest stop.
 """
 
+# Add CAT bus stops to map
 def add_bus(m):
     bus_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
     bus_union = bus_gdf.unary_union
@@ -47,21 +48,24 @@ def add_bus(m):
         name = bus_gdf[bus_gdf['geometry'] == i]['StopName'].to_numpy()[0]
         folium.Marker((i.y, i.x), popup=name, icon=folium.Icon(color='red', icon_color='white', icon='bus', angle=0, prefix='fa')).add_to(m)
     return m
-   
+
+#Two columns created for map layout
 col1, col2 = st.columns(2)
 col1.subheader("CAT Stops")
 col2.subheader("Route to Stop:")
 
+#Create graph of sidewalk network from OSM data 
 def create_graph():
     G = ox.graph_from_place("Charlottesville, Virginia, USA", network_type='walk')
     #convert to geodataframe
     sidewalk_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
     #extract nodes and edges
     nodes_gdf, edges_gdf = ox.graph_to_gdfs(G, nodes=True, edges=True, node_geometry=True, fill_edge_geometry=True)
+    #select only edges that a footpath
     edges2_gdf = edges_gdf[edges_gdf['highway'] == 'footway']
     return G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf
 
-
+#Map1: All CAT stops and sidewalk network in cville
 def map1():
     G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf = create_graph()
     sidewalk_json = edges2_gdf.to_json()
@@ -76,20 +80,20 @@ def m1Html():
     return map1().get_root().render()
 with col1:
     components.html(m1Html(), height=450)
-    
+
+#Sidebar text for user input
 st.sidebar.subheader("Enter an address below:")
 user_input = st.sidebar.text_input("(Street, City, State Zip)", "1215 Lee St, Charlottesville, VA 22903")
 
 address = user_input
 locator = Nominatim(user_agent="geoCoder")
 location = locator.geocode(address)
-
 addr_lat = location.latitude
 addr_long = location.longitude
 address_df = pd.DataFrame({'Address': [address],'Latitude': [addr_lat],'Longitude': [addr_long]})
 address_gdf = gpd.GeoDataFrame(address_df, geometry=gpd.points_from_xy(address_df.Longitude, address_df.Latitude))
 
-
+#Map2: route to address
 mapRoute = folium.Map(location = [38.035629,-78.503403], tiles = 'OpenStreetMap', zoom_start = 15)
 folium.Marker((addr_lat, addr_long), popup=address, 
               icon=folium.Icon(color='darkblue', icon_color='white', 
@@ -97,6 +101,8 @@ folium.Marker((addr_lat, addr_long), popup=address,
 
 G, sidewalk_gdf, nodes_gdf, edges_gdf, edges2_gdf = create_graph()
 
+#function to find closest node to address 
+#credit: https://towardsdatascience.com/nearest-neighbour-analysis-with-geospatial-data-7bcd95f34c0e
 def closest_id(r, val, c="geometry"):
     target_geom = nearest_points(r[c], nodes_gdf.unary_union)
     target = nodes_gdf[nodes_gdf.geometry == target_geom[1]]
@@ -104,26 +110,32 @@ def closest_id(r, val, c="geometry"):
 
 CAT_gdf = gpd.read_file('https://raw.githubusercontent.com/hollisc18/sidewalk-routing/main/bus_gdf.geojson')
 
+#select bus stops within 1km from address
+#narrows down routing calculations
 busLat = CAT_gdf[ abs(CAT_gdf['Latitude']-addr_lat) <  0.01 ] 
 bus_gdf = busLat[ abs(busLat['Longitude']-addr_long) <  0.01]
 
 address_gdf["closest_id"] = address_gdf.apply(closest_id, val="geometry", axis=1)
+#OSM id of the closest node to address
 addr_ID = address_gdf['closest_id'].to_numpy()[0]
 
-G2 = G
+#rerieve OSM ids of bus stops within 1km
 stop_ids = bus_gdf["closest_id"]
 short_len = sys.maxsize
 short_path = []
+
+#network analysis to find closest stop
 for i in stop_ids.index:
     try:
-        r = nx.shortest_path(G2, addr_ID, stop_ids[i], weight='length')
-        len = nx.shortest_path_length(G2, addr_ID, stop_ids[i], weight='length')
+        r = nx.shortest_path(G, addr_ID, stop_ids[i], weight='length')
+        len = nx.shortest_path_length(G, addr_ID, stop_ids[i], weight='length')
         if (len < short_len):
             short_len = len
             short_path = r
     except:
         pass
 
+#convert nodes of short_path to a tuple
 route_pairwise = zip(short_path[:-1], short_path[1:])
 route = [edges_gdf.loc[edge, 'geometry'].iloc[0] for edge in route_pairwise]
 route_gdf = gpd.GeoDataFrame(route)
@@ -138,6 +150,8 @@ target_union = target_stop.unary_union
 
 name = ""
 try:
+    #target_union contains multiple stops
+    #i.e. north bound and south bound
     for t in target_union:
         name = bus_gdf[bus_gdf['geometry'] == t]['StopName'].to_numpy()[0]
         folium.Marker((t.y, t.x), popup=name, icon=folium.Icon(color='red', icon_color='white', 
@@ -145,6 +159,7 @@ try:
         mapRoute.fit_bounds([[addr_lat,addr_long], [t.y, t.x]])
 
 except:
+    #only one closest stop
     name = bus_gdf[bus_gdf['geometry'] == target_union]['StopName'].to_numpy()[0]
     folium.Marker((target_union.y, target_union.x), popup=name, icon=folium.Icon(color='red', icon_color='white', 
                     icon='bus', angle=0, prefix='fa')).add_to(mapRoute)
